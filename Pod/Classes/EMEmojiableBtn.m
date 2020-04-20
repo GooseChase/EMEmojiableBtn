@@ -94,22 +94,21 @@
     
     
     CGRect selectorViewFrame = [UIScreen mainScreen].bounds;
-    origin = [self.superview convertPoint:self.frame.origin toView:nil];
+    origin = self.frame.origin;
     menuDirection = [self getMenuDirection];
     
-    if (!CGPointEqualToPoint(origin,self.frame.origin)) {
-        selectorViewFrame.origin.x -= origin.x;
-        selectorViewFrame.origin.y -= origin.y;
-    }
+    CGFloat buttonWidth = ((CGFloat)(_dataset.count + 1) * self.config.spacing) +(self.config.size*(CGFloat)_dataset.count);
+   CGFloat buttonHeight = self.config.size+(2*self.config.spacing);
+   CGSize sizeBtn = CGSizeMake(buttonWidth,buttonHeight);
+    
+//    if (!CGPointEqualToPoint(origin, self.frame.origin)) {
+//        selectorViewFrame.origin.x -= origin.x;
+//        selectorViewFrame.origin.y -= origin.y;
+//    }
     
     selectorBgView = [[UIView alloc] initWithFrame:selectorViewFrame];
     selectorBgView.backgroundColor = self.config.backgroundColor;
     [self.superview addSubview:selectorBgView];
-    
-    CGFloat buttonWidth = ((CGFloat)(_dataset.count + 1) * self.config.spacing) +(self.config.size*(CGFloat)_dataset.count);
-    CGFloat buttonHeight = self.config.size+(2*self.config.spacing);
-    CGSize sizeBtn = CGSizeMake(buttonWidth,buttonHeight);
-    
     
     CGRect optionsViewFrame = [self adjustFrameIfNeeded:CGRectMake(origin.x, origin.y - sizeBtn.height, sizeBtn.width, sizeBtn.height) leftMenuXOrigin:(origin.x + self.frame.size.width - sizeBtn.width) downMenuYOrigin:0.0];
     
@@ -126,7 +125,7 @@
     [UIView animateWithDuration:0.2 animations:^{
         CGRect frame = self.optionsView.frame;
         frame.origin.y = self.origin.y - (self.config.s_options_selector + sizeBtn.height);
-        self.optionsView.frame = optionsViewOriginalRect = frame;
+        self.optionsView.frame = self -> optionsViewOriginalRect = frame;
         self.optionsView.alpha = 1.0;
     }];
     
@@ -177,28 +176,28 @@
             CGPoint center;
             CGRect optionFrame = option.frame;
             optionFrame.size = CGSizeMake(10.0,10.0);
-            informationView.alpha = 0;
+            self->informationView.alpha = 0;
             option.alpha    = 0.3;
             option.frame    = optionFrame;
             if(optionIndex == idx){
                 center = CGPointMake(((CGFloat)idx+1.0*self.config.spacing)+(self.config.size*idx)+self.config.size/2,-self.optionsView.frame.size.height+self.config.size/2.0);
-                option.center = [self adjustPointIfNeeded:center leftMenuX:(optionsView.frame.size.width - center.x) downMenuY:0.0];
+                option.center = [self adjustPointIfNeeded:center leftMenuX:(self->optionsView.frame.size.width - center.x) downMenuY:0.0];
                 
             }else{
                 center = CGPointMake(((CGFloat)idx+1.0*self.config.spacing)+(self.config.size*(CGFloat)idx)+self.config.size/2.0, self.optionsView.frame.size.height+self.config.size/2.0);
-                option.center = [self adjustPointIfNeeded:center leftMenuX:(optionsView.frame.size.width - center.x) downMenuY:0.0];
+                option.center = [self adjustPointIfNeeded:center leftMenuX:(self->optionsView.frame.size.width - center.x) downMenuY:0.0];
             }
             
         } completion:^(BOOL finished) {
-            if (finished && idx == (_dataset.count/2)){
+            if (finished && idx == (self->_dataset.count/2)){
                 [UIView animateWithDuration:0.1 animations:^{
-                    CGRect optionsViewFrame = optionsView.frame;
-                    optionsViewFrame.origin.y = origin.y - (self.config.size+(2*self.config.spacing));
-                    optionsView.alpha   = 0;
-                    optionsView.frame = optionsViewFrame;
+                    CGRect optionsViewFrame = self->optionsView.frame;
+                    optionsViewFrame.origin.y = self->origin.y - (self.config.size+(2*self.config.spacing));
+                    self->optionsView.alpha   = 0;
+                    self->optionsView.frame = optionsViewFrame;
                 } completion:^(BOOL finished) {
-                    active = false;
-                    [selectorBgView removeFromSuperview];
+                    self->active = false;
+                    [self->selectorBgView removeFromSuperview];
                 }];
             }
         }];
@@ -214,11 +213,11 @@
     [informationView activateInfo:NO];
     
     [UIView animateWithDuration:0.3 animations:^{
-        CGFloat buttonWidth = (((CGFloat)_dataset.count-1*self.config.spacing)+(self.config.minSize*(CGFloat)_dataset.count-1)+self.config.maxSize);
+        CGFloat buttonWidth = (((CGFloat)self->_dataset.count-1*self.config.spacing)+(self.config.minSize*(CGFloat)_dataset.count-1)+self.config.maxSize);
         CGFloat buttonHeight = self.config.minSize+(2*self.config.spacing);
         CGSize sizeBtn = CGSizeMake(buttonWidth,buttonHeight);
         
-        optionsView.frame = [self adjustFrameIfNeeded:CGRectMake(self.origin.x, self.origin.y - (self.config.s_options_selector+sizeBtn.height), sizeBtn.width, sizeBtn.height) leftMenuXOrigin:(self.origin.x + self.frame.size.width - sizeBtn.width) downMenuYOrigin:0.0];
+        self->optionsView.frame = [self adjustFrameIfNeeded:CGRectMake(self.origin.x, self.origin.y - (self.config.s_options_selector+sizeBtn.height), sizeBtn.width, sizeBtn.height) leftMenuXOrigin:(self.origin.x + self.frame.size.width - sizeBtn.width) downMenuYOrigin:0.0];
         optionsView.layer.cornerRadius = sizeBtn.height/2;
         
         __block CGFloat last = index != 0 ? self.config.spacing : 0;
